@@ -47,22 +47,21 @@ JWT_SECRET=supersecretjwtkey12345
 4. Start the Vite dev server: `npm run dev`
    - The app will run on http://localhost:5173.
 
-## Deployment Guidelines
+## Deployment Guidelines (Render)
 
-### Backend (Render)
-1. Push the repository to GitHub.
-2. In Render, create a new "Web Service" and connect your repository.
-3. Set the Root Directory to `backend`.
-4. Build Command: `npm install`
-5. Start Command: `node index.js`
-6. Add Environment Variables (`MONGO_URI`, `JWT_SECRET`, `PORT`).
-7. Deploy.
+This application is configured to be deployed as a single Web Service on Render, meaning the Node.js backend will serve the compiled React frontend.
 
-### Frontend (Vercel)
-1. In Vercel, import your GitHub repository.
-2. Set the Root Directory to `frontend`.
-3. Framework Preset: Vite
-4. Build Command: `npm run build`
-5. Output Directory: `dist`
-6. Add Environment Variable: `VITE_API_URL` (Set this to your Render backend URL, e.g., `https://your-backend.onrender.com/api`).
-7. Deploy.
+1. Push the entire repository to GitHub.
+2. Log into [Render](https://render.com/) and create a new **"Web Service"**.
+3. Connect your GitHub repository.
+4. **Important Settings for Render:**
+   - **Root Directory**: (leave this blank)
+   - **Build Command**: `npm run build`
+   - **Start Command**: `npm start`
+5. Click **Advanced** and add the following **Environment Variables**:
+   - `MONGO_URI`: (Your MongoDB Atlas connection string)
+   - `JWT_SECRET`: (Any long secure random string, e.g., `supersecretkey123`)
+   - `NODE_ENV`: `production`
+6. Click **Create Web Service**.
+
+Render will now install all dependencies, build the React frontend, and start the Node server automatically!
