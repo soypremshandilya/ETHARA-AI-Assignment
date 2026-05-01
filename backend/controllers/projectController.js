@@ -1,4 +1,5 @@
 const Project = require('../models/Project');
+const Notification = require('../models/Notification');
 
 // @desc    Get all projects
 // @route   GET /api/projects
@@ -34,6 +35,17 @@ const createProject = async (req, res) => {
       createdBy: req.user._id,
       members: members || []
     });
+
+    // Create notifications for all members added to the project
+    if (members && members.length > 0) {
+      const notifications = members.map(memberId => ({
+        recipient: memberId,
+        message: `You have been added to the project: ${project.name}`,
+        type: 'project_added',
+        relatedId: project._id
+      }));
+      await Notification.insertMany(notifications);
+    }
 
     res.status(201).json(project);
   } catch (error) {

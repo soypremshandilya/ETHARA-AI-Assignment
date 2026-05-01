@@ -1,5 +1,6 @@
 const Task = require('../models/Task');
 const Project = require('../models/Project');
+const Notification = require('../models/Notification');
 
 // @desc    Get all tasks for a project or all user tasks
 // @route   GET /api/tasks
@@ -55,6 +56,23 @@ const createTask = async (req, res) => {
       dueDate,
       priority
     });
+
+    // Notify project members about the new task
+    if (project.members && project.members.length > 0) {
+      // Create a notification for each member except the admin who created it
+      const notifications = project.members
+        .filter(memberId => memberId.toString() !== req.user._id.toString())
+        .map(memberId => ({
+          recipient: memberId,
+          message: `A new task "${task.title}" was added to project: ${project.name}`,
+          type: 'task_added',
+          relatedId: task._id
+        }));
+        
+      if (notifications.length > 0) {
+        await Notification.insertMany(notifications);
+      }
+    }
 
     res.status(201).json(task);
   } catch (error) {
