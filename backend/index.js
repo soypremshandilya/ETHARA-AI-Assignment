@@ -30,11 +30,11 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
   // For any route not defined in the backend, serve the React index.html
-  app.get('*', (req, res) =>
+  app.use((req, res) => {
     res.sendFile(
       path.resolve(__dirname, '../', 'frontend', 'dist', 'index.html')
-    )
-  );
+    );
+  });
 } else {
   // Basic route for development
   app.get('/', (req, res) => {
