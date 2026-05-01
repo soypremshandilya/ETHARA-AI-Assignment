@@ -12,8 +12,15 @@ const getTasks = async (req, res) => {
     if (projectId) {
       query.projectId = projectId;
     } else if (req.user.role !== 'Admin') {
-      // If not admin and no project specified, get tasks assigned to user
-      query.assignedTo = req.user._id;
+      // Find all projects where the user is a member
+      const userProjects = await Project.find({ members: req.user._id }).select('_id');
+      const projectIds = userProjects.map(p => p._id);
+      
+      // Get tasks either assigned specifically to user OR belonging to projects they are members of
+      query.$or = [
+        { assignedTo: req.user._id },
+        { projectId: { $in: projectIds } }
+      ];
     }
 
     const tasks = await Task.find(query).populate('assignedTo', 'name email').populate('projectId', 'name');
